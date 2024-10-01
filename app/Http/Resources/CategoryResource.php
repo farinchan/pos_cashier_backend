@@ -20,17 +20,19 @@ class CategoryResource extends JsonResource
             'description' => $this->description,
             'created_at' => $this->created_at,
             'updated_at' => $this->updated_at,
-            'products' => $this->products->map(function ($product) {
-                return [
-                    'id' => $product->id,
-                    'name' => $product->name,
-                    'description' => $product->description,
-                    'price' => $product->price,
-                    'stock' => $product->stock,
-                    'created_at' => $product->created_at,
-                    'updated_at' => $product->updated_at,
-                ];
-            }),
+            // 'products' => $this->products->map(function ($product) {
+            //     return [
+            //         'id' => $product->id,
+            //         'name' => $product->name,
+            //         'description' => $product->description,
+            //         'price' => $product->price,
+            //         'stock' => $product->stock,
+            //         'image' => $this->image ? asset('storage/' . $this->image) : "https://www.mon-site-bug.fr/uploads/products/default-product.png",
+            //         'barcode' => $product->barcode,
+            //         'created_at' => $product->created_at,
+            //         'updated_at' => $product->updated_at,
+            //     ];
+            // }),
         ];
     }
 }

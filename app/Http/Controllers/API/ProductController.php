@@ -12,11 +12,17 @@ class ProductController extends BaseController
 {
 
     public function index(Request $request)
-   
+
     {
         $keyword = $request->input('q');
-        $perPage = $request->input('perPage', 10);            
-        $data = Product::where('name', 'like', "%$keyword%")->latest()->paginate($perPage);
+        $category_id = $request->input('category');
+        $perPage = $request->input('perPage', 10);
+        $data = Product::where('name', 'like', "%$keyword%")
+            ->when($category_id, function ($query, $category_id) {
+                return $query->where('category_id', $category_id);
+            })
+            ->latest()
+            ->paginate($perPage);
         return $this->sendResponseWithPagination(ProductResource::collection($data), 'Products retrieved successfully.', $request);
     }
 
@@ -91,7 +97,6 @@ class ProductController extends BaseController
         $product->save();
 
         return $this->sendResponseValidation($product, 'Product updated successfully.', $validation);
-
     }
 
     public function destroy(Product $product)
@@ -100,6 +105,4 @@ class ProductController extends BaseController
 
         return $this->sendResponse([], 'Product deleted successfully.');
     }
-
-
 }
