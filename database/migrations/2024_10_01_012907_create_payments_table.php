@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('payments', function (Blueprint $table) {
             $table->id();
             $table->foreignId('transaction_id')->constrained()->cascadeOnDelete();
-            $table->string('payment_method');
+            $table->string('payment_method')->default('cash');
             $table->integer('paid');
             $table->integer('change');
             $table->timestamps();

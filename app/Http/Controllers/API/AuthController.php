@@ -23,7 +23,6 @@ class AuthController extends BaseController
             'username' => 'required|string|max:255|unique:users',
             'email' => 'required|string|email|max:255|unique:users',
             'password' => 'required|string|min:8',
-            'phone' => 'required|numeric|digits_between:10,15|unique:users',
         ]);
 
         $validation = array_fill_keys(array_keys($request->all()), []);
@@ -46,7 +45,6 @@ class AuthController extends BaseController
                 'username' => $request->username,
                 'email' => $request->email,
                 'password' => Hash::make($request->password),
-                'phone' => $request->phone,
                 'is_active' => true,
             ]);
 
@@ -98,7 +96,7 @@ class AuthController extends BaseController
 
         try {
             if (filter_var($request->email_or_username, FILTER_VALIDATE_EMAIL)) {
-                if (! $token = Auth::attempt($request->only('email_or_username', 'password'))) {
+                if (! $token = Auth::attempt(['email' => $request->email_or_username, 'password' => $request->password])) {
                     return response()->json([
                         'response' => Response::HTTP_UNAUTHORIZED,
                         'success' => false,

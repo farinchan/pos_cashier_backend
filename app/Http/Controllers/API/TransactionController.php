@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use App\Models\Transaction;
 use App\Http\Resources\TransactionResource;
 use App\Models\Product;
+use App\Models\TransactionDetail;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
 
@@ -64,7 +65,8 @@ class TransactionController extends BaseController
 
             //buat detail transaksi
             foreach ($input['details'] as $detail) {
-                $transaction->TransactionDetail()->create([
+                TransactionDetail::create([
+                    'transaction_id' => $transaction->id,
                     'product_id' => $detail['product_id'],
                     'quantity' => $detail['quantity'],
                     'price' => $detail['price'],
@@ -84,7 +86,7 @@ class TransactionController extends BaseController
             
             return $this->sendResponseValidation(new TransactionResource($transaction), 'Transaction created successfully.', $validation);
         } catch (\Throwable $th) {
-            return $this->sendError('Transaction failed to create.');
+            return $this->sendError('Transaction failed to create.', ["error" => $th->getMessage()]); 
         }
         
 
@@ -92,7 +94,7 @@ class TransactionController extends BaseController
 
     public function show($id)
     {
-        $transaction = Transaction::find($id);
+        $transaction = Transaction::with('TransactionDetail', 'TransactionPayment')->find($id);
 
         if (is_null($transaction)) {
             return $this->sendResponse([], 'Transaction not found.');
@@ -167,10 +169,17 @@ class TransactionController extends BaseController
         }
     }
 
-    public function destroy(Transaction $transaction)
+    public function destroy($id)
     {
-        $transaction->delete();
-        return $this->sendResponse([], 'Transaction deleted successfully.');
+        try {
+            $transaction = Transaction::find($id);
+            $transaction->TransactionDetail()->delete();
+            $transaction->TransactionPayment()->delete();
+            $transaction->delete();
+            return $this->sendResponse([], 'Transaction deleted successfully.');
+        } catch (\Throwable $th) {
+            return $this->sendError('Transaction failed to delete.');
+        }
     }
 
     

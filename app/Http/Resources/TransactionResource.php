@@ -16,31 +16,29 @@ class TransactionResource extends JsonResource
     {
         return [
             'id' => $this->id,
-            'quantity' => $this->quantity,
-            'product' => $this->product->name,
-            'total' => $this->quantity * $this->product->price,
+            'total' => $this->total,
             'created_at' => $this->created_at,
             'updated_at' => $this->updated_at,
-            'product' => $this->TransactionDetail->map(function ($detail) {
+            'product' => $this->TransactionDetail?->map(function ($detail) {
                 return [
                     'id' => $detail->id,
                     'transaction_id' => $detail->transaction_id,
                     'product_id' => $detail->product_id,
                     'quantity' => $detail->quantity,
-                    'price' => $detail->product->price,
-                    'total' => $detail->quantity * $detail->product->price,
+                    'price' => $detail->price,
+                    'total' => $detail->quantity * $detail->price,
                 ];
             }),
             'payment' => [
-                'id' => $this->payment->id,
-                'paid' => $this->payment->paid,
-                'change' => $this->payment->change,
+                'id' => $this->TransactionPayment?->id,
+                'paid' => $this->TransactionPayment?->paid,
+                'change' => $this->TransactionPayment?->change,
             ],
-            'user' => [
-                'id' => $this->user->id,
-                'name' => $this->user->name,
-                'username' => $this->user->username,
-                'email' => $this->user->email,
+            'cashier' => [
+                'id' => $this->user?->id,
+                'name' => $this->user?->name,
+                'username' => $this->user?->username,
+                'email' => $this->user?->email,
             ]
         ];
     }

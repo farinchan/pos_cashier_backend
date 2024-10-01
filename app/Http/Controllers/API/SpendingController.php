@@ -3,8 +3,10 @@
 namespace App\Http\Controllers\API;
 
 use App\Http\Controllers\Controller;
+use App\Http\Resources\SpendingResource;
 use App\Models\Spending;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
 
 class SpendingController extends BaseController
@@ -14,11 +16,14 @@ class SpendingController extends BaseController
     {
         $date_start = $request->input('date_start', date('Y-m-d 00:00:00'));
         $date_end = $request->input('date_end', date('Y-m-d 23:59:59'));
+
+        // dd($date_start, $date_end);
+        
         
         $perPage = request()->input('perPage', 10);
         $spendings = Spending::whereBetween('created_at', [$date_start, $date_end])->latest()->paginate($perPage);
 
-        return $this->sendResponseWithPagination($spendings, 'Spendings retrieved successfully.', request());
+        return $this->sendResponseWithPagination(SpendingResource::collection($spendings), 'Spendings retrieved successfully.', $request);
 
     }
 
@@ -40,6 +45,8 @@ class SpendingController extends BaseController
             return $this->sendErrorValidation($validation);
         }
 
+        $input['user_id'] = Auth::user()->id;
+
         $spending = Spending::create($input);
 
         return $this->sendResponseValidation($spending, 'Spending created successfully.', $validation);
@@ -54,7 +61,7 @@ class SpendingController extends BaseController
             return $this->sendResponse([], 'Spending not found.');
         }
 
-        return $this->sendResponse($spending, 'Spending retrieved successfully.');
+        return $this->sendResponse(new SpendingResource($spending), 'Spending retrieved successfully.');
     }
 
     public function update(Request $request, $id)
@@ -84,11 +91,15 @@ class SpendingController extends BaseController
         return $this->sendResponseValidation($spending, 'Spending updated successfully.', $validation);
     }
 
-    public function destroy(Spending $spending)
+    public function destroy($id)
     {
-        $spending->delete();
-
-        return $this->sendResponse($spending, 'Spending deleted successfully.');
+        try {
+            $spending = Spending::find($id);
+            $spending->delete();
+            return $this->sendResponse([], 'Spending deleted successfully.');
+        } catch (\Throwable $th) {
+            return $this->sendError('Spending failed to delete.');
+        }
     }
 
     

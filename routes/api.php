@@ -18,7 +18,7 @@ Route::group(['prefix' => 'v1'], function () {
     Route::prefix('auth')->group(function () {
         Route::post('login', [AuthController::class, 'login']);
         Route::post('register', [AuthController::class, 'register']);
-        Route::post('forgot-password', [AuthController::class, 'forgotPassword']);
+        Route::post('forgot-password', [AuthController::class, 'forget']);
         Route::post('logout', [AuthController::class, 'logout'])->middleware('auth:sanctum');
     });
 
@@ -26,7 +26,7 @@ Route::group(['prefix' => 'v1'], function () {
         Route::get('/', [ProductController::class, 'index']);
         Route::get('/{id}', [ProductController::class, 'show']);
         Route::post('/', [ProductController::class, 'store'])->middleware('auth:sanctum');
-        Route::put('/{id}', [ProductController::class, 'update'])->middleware('auth:sanctum');
+        Route::post('/{id}', [ProductController::class, 'update'])->middleware('auth:sanctum');
         Route::delete('/{id}', [ProductController::class, 'destroy'])->middleware('auth:sanctum');
 
         Route::post('/search', [ProductController::class, 'search']);

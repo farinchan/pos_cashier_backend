@@ -24,7 +24,7 @@ class CategoryController extends BaseController
 
         $validator = Validator::make($input, [
             'name' => 'required',
-            'description' => 'required',
+            'description' => 'nullable',
         ]);
         $validation = array_fill_keys(array_keys($request->all()), []);
         if ($validator->fails()) {
@@ -36,7 +36,7 @@ class CategoryController extends BaseController
 
         $category = Category::create($input);
 
-        return $this->sendResponse($category, 'Category created successfully.');
+        return $this->sendResponseValidation($category, 'Category created successfully.', $validation);
     }
 
     public function show($id)
@@ -75,9 +75,14 @@ class CategoryController extends BaseController
         return $this->sendResponse($category, 'Category updated successfully.');
     }
 
-    public function destroy(Category $category)
+    public function destroy($id)
     {
-        $category->delete();
-        return $this->sendResponse([], 'Category deleted successfully.');
+        try {
+            $category = Category::find($id);
+            $category->delete();
+            return $this->sendResponse($category, 'Category deleted successfully.');
+        } catch (\Throwable $th) {
+            return $this->sendError('Category failed to delete.');
+        }
     }
 }

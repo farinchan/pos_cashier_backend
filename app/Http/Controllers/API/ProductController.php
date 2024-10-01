@@ -30,6 +30,8 @@ class ProductController extends BaseController
             'price' => 'required|numeric',
             'stock' => 'required|numeric',
             'category_id' => 'required|numeric',
+            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
+            'barcode' => 'nullable',
         ]);
         $validation = array_fill_keys(array_keys($request->all()), []);
         if ($validator->fails()) {
@@ -37,6 +39,12 @@ class ProductController extends BaseController
                 $validation[$key] = $errors;
             }
             return $this->sendErrorValidation($validation);
+        }
+
+        if ($request->hasFile('image')) {
+            $image = $request->file('image');
+            $file_path = $image->storeAs('products', time() . '.' . $image->getClientOriginalExtension(), 'public');
+            $input['image'] = str_replace('public/', '', $file_path);
         }
 
         $product = Product::create($input);
