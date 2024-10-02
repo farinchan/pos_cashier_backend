@@ -16,14 +16,13 @@ class ProductController extends BaseController
     {
         $keyword = $request->input('q');
         $category_id = $request->input('category');
-        $perPage = $request->input('perPage', 10);
         $data = Product::where('name', 'like', "%$keyword%")
             ->when($category_id, function ($query, $category_id) {
                 return $query->where('category_id', $category_id);
             })
             ->latest()
-            ->paginate($perPage);
-        return $this->sendResponseWithPagination(ProductResource::collection($data), 'Products retrieved successfully.', $request);
+            ->get();
+        return $this->sendResponse(ProductResource::collection($data), 'Products retrieved successfully.');
     }
 
     public function store(Request $request)

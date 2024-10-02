@@ -7,6 +7,7 @@ use App\Models\Product;
 use App\Models\User;
 // use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
+use Nette\Utils\Random;
 
 class DatabaseSeeder extends Seeder
 {
@@ -70,87 +71,10 @@ class DatabaseSeeder extends Seeder
             'description' => 'Peralatan olahraga adalah alat-alat yang digunakan untuk berolahraga.',
         ]);
 
-        Product::create([
-            'name' => 'Garam Dolphin 300gr',
-            'description' => 'Garam dapur adalah garam yang digunakan untuk menambah rasa pada masakan.',
-            'price' => 2000,
-            'stock' => 100,
-            'category_id' => 1,
-            'barcode' => '8992718000011',
-        ]);
-        
-        Product::create([
-            'name' => 'Sasa Tepung Terigu 1kg',
-            'description' => 'Tepung terigu adalah tepung yang digunakan untuk membuat kue.',
-            'price' => 8000,
-            'stock' => 100,
-            'category_id' => 1,
-            'barcode' => '8992718000022',
-        ]);
-
-        Product::create([
-            'name' => 'Sasa Tepung Beras 1kg',
-            'description' => 'Tepung beras adalah tepung yang digunakan untuk membuat kue.',
-            'price' => 10000,
-            'stock' => 100,
-            'category_id' => 1,
-            'barcode' => '8992718000033',
-        ]);
-
-        Product::create([
-            'name' => 'Sasa Tepung Jagung 1kg',
-            'description' => 'Tepung jagung adalah tepung yang digunakan untuk membuat kue.',
-            'price' => 12000,
-            'stock' => 100,
-            'category_id' => 1,
-            'barcode' => '8992718000044',
-        ]);
-
-        Product::create([
-            'name' => 'Sasa Tepung Kanji 1kg',
-            'description' => 'Tepung kanji adalah tepung yang digunakan untuk membuat kue.',
-            'price' => 15000,
-            'stock' => 100,
-            'category_id' => 1,
-            'barcode' => '8992718000055',
-        ]);
-
-        Product::create([
-            'name' => 'Roma Sari Gandum 190gr',
-            'description' => 'Biskuit roma adalah biskuit yang enak.',
-            'price' => 5000,
-            'stock' => 100,
-            'category_id' => 2,
-            'barcode' => '8992718000066',
-        ]);
-
-        Product::create([
-            'name' => 'Roma Kelapa 300gr',
-            'description' => 'Biskuit roma adalah biskuit yang enak.',
-            'price' => 5000,
-            'stock' => 100,
-            'category_id' => 2,
-            'barcode' => '8992718000077',
-        ]);
-
-        Product::create([
-            'name' => 'Unibis See Hong Puff 100gr',
-            'description' => 'Biskuit unibis adalah biskuit yang enak.',
-            'price' => 5000,
-            'stock' => 100,
-            'category_id' => 2,
-            'barcode' => '8992718000088',
-        ]);
-
-        Product::create([
-            'name' => 'Golda Chapucino 100gr',
-            'description' => 'minuman instan yang enak.',
-            'price' => 5000,
-            'stock' => 100,
-            'category_id' => 3,
-            'barcode' => '8992718000099',
-        ]);
-
+        Product::factory(500)->create()->each(function ($product) {
+            $product->name = 'Product ID-' . $product->id . ' dengan kategori ' . $product->category->name;
+            $product->save();
+        });
 
     }
 }
